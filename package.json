@@ -1,0 +1,27 @@
+{
+  "name": "react-match3-game",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.jsx",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/grigoriytretyakov/react-match3-game.git"
+  },
+  "author": "Grigoriy Tretyakov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/grigoriytretyakov/react-match3-game/issues"
+  },
+  "homepage": "https://github.com/grigoriytretyakov/react-match3-game#readme",
+  "devDependencies": {
+    "react-hot-loader": "^1.3.1"
+  },
+  "dependencies": {
+    "react": "^15.6.1",
+    "react-redux": "^5.0.6",
+    "redux": "^3.7.2"
+  }
+}
