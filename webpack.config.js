@@ -4,7 +4,7 @@ var webpack = require('webpack');
 module.exports = {
     entry: './src/index.jsx',
     output: {
-        path: path.resolve(__dirname, '..', 'build'),
+        path: path.resolve(__dirname, 'dst'),
         filename: 'match3cat.js'
     },
     module: {
