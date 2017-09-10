@@ -1,19 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
 
-class Game extends React.Component {
-    render() {
-        return (
-            <div className="game">
-                <img src="/cats.png" alt="Котики" style={{maxWidth: '100%'}} />
-            </div>
-        )
-    }
-}
 
+import Game from './game.jsx';
+import reducer from './reducers';
+
+
+const store = createStore(reducer);
 
 ReactDOM.render(
-    <Game />,
+    <Provider store={store}>
+        <Game />
+    </Provider>,
     document.getElementById('root')
 )
