@@ -9758,30 +9758,30 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var HiView = function (_React$Component) {
-    _inherits(HiView, _React$Component);
+var Game = function (_React$Component) {
+    _inherits(Game, _React$Component);
 
-    function HiView() {
-        _classCallCheck(this, HiView);
+    function Game() {
+        _classCallCheck(this, Game);
 
-        return _possibleConstructorReturn(this, (HiView.__proto__ || Object.getPrototypeOf(HiView)).apply(this, arguments));
+        return _possibleConstructorReturn(this, (Game.__proto__ || Object.getPrototypeOf(Game)).apply(this, arguments));
     }
 
-    _createClass(HiView, [{
+    _createClass(Game, [{
         key: 'render',
         value: function render() {
             return _react2.default.createElement(
-                'm',
-                null,
-                'Game will be here soon!'
+                'div',
+                { className: 'game' },
+                _react2.default.createElement('img', { src: '/cats.png', alt: '\u041A\u043E\u0442\u0438\u043A\u0438', style: { maxWidth: '100%' } })
             );
         }
     }]);
 
-    return HiView;
+    return Game;
 }(_react2.default.Component);
 
-_reactDom2.default.render(_react2.default.createElement(HiView, null), document.getElementById('game'));
+_reactDom2.default.render(_react2.default.createElement(Game, null), document.getElementById('root'));
 
 /***/ }),
 /* 82 */

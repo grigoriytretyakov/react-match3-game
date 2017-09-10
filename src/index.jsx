@@ -2,13 +2,18 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 
-class HiView extends React.Component {
+class Game extends React.Component {
     render() {
-        return <m>Game will be here soon!</m>;
+        return (
+            <div className="game">
+                <img src="/cats.png" alt="Котики" style={{maxWidth: '100%'}} />
+            </div>
+        )
     }
 }
 
+
 ReactDOM.render(
-    <HiView />,
-    document.getElementById('game')
+    <Game />,
+    document.getElementById('root')
 )

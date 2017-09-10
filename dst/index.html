@@ -4,9 +4,43 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width" />
         <title>Match3Cat</title>
+        <style type="text/css" media="screen">
+            body {
+                background-color: #FDF6E3;
+                color: #839496;
+                margin: 0;
+                padding: 0;
+            }
+
+            .header {
+                background-color: #5F005F;
+                color: #FFF;
+                width: 100%;
+                min-height: 50px;
+            }
+            .header .logo {
+                color: #FFF;
+                font: 20px monospace;
+                text-decoration: none;
+                font-weight: 500;
+                padding: 10px 40px;
+                display: inline-block;
+            }
+
+            .game {
+                box-shadow: 0 0 4px #839496;
+                background-color: #FFF;
+                height: 600px;
+                margin: 40px auto;
+                width: 600px;
+            }
+        </style>
     </head>
     <body>
-        <div id="game"> </div>
+        <div class="header">
+            <a href="/" class="logo">Match3Cat - собери одинаковых котиков</a>
+        </div>
+        <div id="root"> </div>
         <script src="match3cat.js"></script>
     </body>
 </html>
