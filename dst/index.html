@@ -11,12 +11,10 @@
                 margin: 0;
                 padding: 0;
             }
-
             .container {
                 margin: 0 auto;
                 width: 768px;
             }
-
             .header {
                 background-color: #5F005F;
                 color: #FFF;
@@ -31,7 +29,6 @@
                 padding: 10px 40px;
                 display: inline-block;
             }
-
             .board {
                 box-shadow: 0 0 4px #839496;
                 background-color: #FFF;
@@ -44,7 +41,6 @@
                 margin: 0 auto;
                 width: 600px;
             }
-
             .btn-cat {
                 background-color: transparent;
                 border: 1px solid transparent;
@@ -52,12 +48,24 @@
                 display: inline-block;
                 height: 60px;
                 margin: 0;
-                padding: 3px;
+                padding: 10px;
                 text-align: center;
                 vertical-align: middle;
                 width: 60px;
                 border-bottom: 1px dashed #ddd;
                 border-right: 1px dashed #ddd;
+            }
+            .btn-cat::-moz-focus-inner {
+                border: 0;
+            }
+            .btn-cat:focus {
+                outline: none;
+            }
+
+
+            .selected {
+                background-color: #ebb;
+                padding: 4px;
             }
             .cat {
                 max-height: 100%;

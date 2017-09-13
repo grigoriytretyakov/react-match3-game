@@ -24767,6 +24767,10 @@ var _reactDom = __webpack_require__(60);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
+var _board = __webpack_require__(227);
+
+var _board2 = _interopRequireDefault(_board);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -24800,66 +24804,8 @@ var Info = function (_React$Component) {
 
 ;
 
-var Cat = function (_React$Component2) {
-    _inherits(Cat, _React$Component2);
-
-    function Cat() {
-        _classCallCheck(this, Cat);
-
-        return _possibleConstructorReturn(this, (Cat.__proto__ || Object.getPrototypeOf(Cat)).apply(this, arguments));
-    }
-
-    _createClass(Cat, [{
-        key: 'render',
-        value: function render() {
-            var i = this.props.i;
-
-            var catNumber = i % 6; // Всего 6 котов нарисовано
-
-            return _react2.default.createElement(
-                'button',
-                { className: 'btn-cat' },
-                _react2.default.createElement('img', { className: 'cat cat-' + catNumber, src: '/cat' + catNumber + '.png' })
-            );
-        }
-    }]);
-
-    return Cat;
-}(_react2.default.Component);
-
-;
-
-var Board = function (_React$Component3) {
-    _inherits(Board, _React$Component3);
-
-    function Board() {
-        _classCallCheck(this, Board);
-
-        return _possibleConstructorReturn(this, (Board.__proto__ || Object.getPrototypeOf(Board)).apply(this, arguments));
-    }
-
-    _createClass(Board, [{
-        key: 'render',
-        value: function render() {
-            var cats = [];
-            for (var i = 0; i < 100; i++) {
-                cats.push(_react2.default.createElement(Cat, { i: i }));
-            }
-            return _react2.default.createElement(
-                'div',
-                { className: 'board' },
-                cats
-            );
-        }
-    }]);
-
-    return Board;
-}(_react2.default.Component);
-
-;
-
-var Game = function (_React$Component4) {
-    _inherits(Game, _React$Component4);
+var Game = function (_React$Component2) {
+    _inherits(Game, _React$Component2);
 
     function Game() {
         _classCallCheck(this, Game);
@@ -24873,7 +24819,7 @@ var Game = function (_React$Component4) {
             return _react2.default.createElement(
                 'div',
                 { className: 'game' },
-                _react2.default.createElement(Board, null),
+                _react2.default.createElement(_board2.default, null),
                 _react2.default.createElement(Info, null)
             );
         }
@@ -24897,15 +24843,204 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _actions = __webpack_require__(228);
+
+var _constants = __webpack_require__(229);
+
+var initFirstState = function initFirstState() {
+    var cats = [];
+
+    for (var i = 0; i < _constants.BOARD_SIZE * _constants.BOARD_SIZE; i++) {
+        cats.push(Math.floor(Math.random() * _constants.CATS_NUMBER));
+    }
+
+    return {
+        cats: cats,
+        selected: -1
+    };
+};
+
+var selectCat = function selectCat(state, catIndex) {
+    return _extends({}, state, {
+        selected: state.selected == catIndex ? -1 : catIndex
+    });
+};
+
 exports.default = function () {
-    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initFirstState();
     var action = arguments[1];
 
     switch (action.type) {
+        case _actions.ACTION_TYPES.SELECT_CAT:
+            return selectCat(state, action.catIndex);
         default:
             return state;
     }
 };
+
+/***/ }),
+/* 227 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(24);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = __webpack_require__(197);
+
+var _actions = __webpack_require__(228);
+
+var actions = _interopRequireWildcard(_actions);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Cat = function (_React$Component) {
+    _inherits(Cat, _React$Component);
+
+    function Cat() {
+        _classCallCheck(this, Cat);
+
+        return _possibleConstructorReturn(this, (Cat.__proto__ || Object.getPrototypeOf(Cat)).apply(this, arguments));
+    }
+
+    _createClass(Cat, [{
+        key: 'click',
+        value: function click() {
+            var _props = this.props,
+                catIndex = _props.catIndex,
+                selectCat = _props.selectCat;
+
+            selectCat(catIndex);
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            var _this2 = this;
+
+            var _props2 = this.props,
+                catKind = _props2.catKind,
+                selected = _props2.selected;
+
+
+            return _react2.default.createElement(
+                'button',
+                {
+                    className: selected ? 'btn-cat selected' : 'btn-cat',
+                    onClick: function onClick(e) {
+                        return _this2.click();
+                    }
+                },
+                _react2.default.createElement('img', {
+                    className: 'cat cat-' + catKind,
+                    src: '/cat' + catKind + '.png'
+                })
+            );
+        }
+    }]);
+
+    return Cat;
+}(_react2.default.Component);
+
+;
+
+Cat = (0, _reactRedux.connect)(function (state) {
+    return {};
+}, actions)(Cat);
+
+var Board = function (_React$Component2) {
+    _inherits(Board, _React$Component2);
+
+    function Board() {
+        _classCallCheck(this, Board);
+
+        return _possibleConstructorReturn(this, (Board.__proto__ || Object.getPrototypeOf(Board)).apply(this, arguments));
+    }
+
+    _createClass(Board, [{
+        key: 'render',
+        value: function render() {
+            var state = this.props.state;
+
+
+            var cats = state.cats.map(function (catKind, i) {
+                return _react2.default.createElement(Cat, {
+                    catKind: catKind,
+                    catIndex: i,
+                    key: 'key-cat-' + i,
+                    selected: i == state.selected
+                });
+            });
+
+            return _react2.default.createElement(
+                'div',
+                { className: 'board' },
+                cats
+            );
+        }
+    }]);
+
+    return Board;
+}(_react2.default.Component);
+
+;
+
+exports.default = (0, _reactRedux.connect)(function (state) {
+    return { state: state };
+}, actions)(Board);
+
+/***/ }),
+/* 228 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+var ACTION_TYPES = exports.ACTION_TYPES = {
+    SELECT_CAT: 'SELECT_CAT'
+};
+
+var selectCat = exports.selectCat = function selectCat(catIndex) {
+    return {
+        type: ACTION_TYPES.SELECT_CAT,
+        catIndex: catIndex
+    };
+};
+
+/***/ }),
+/* 229 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var BOARD_SIZE = exports.BOARD_SIZE = 10;
+
+var CATS_NUMBER = exports.CATS_NUMBER = 6;
 
 /***/ })
 /******/ ]);
