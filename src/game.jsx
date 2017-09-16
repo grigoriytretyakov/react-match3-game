@@ -1,17 +1,27 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { connect } from 'react-redux';
 
+import * as actions from './actions';
 import Board from './board.jsx';
 
-class Info extends React.Component {
+
+class Panel extends React.Component {
     render() {
+        const { state } = this.props;
+
         return (
             <div className="info">
-                Score: 0
+                <div className="info-block">
+                    <div className="info-item">Score:</div>
+                    <div className="info-item">{ state.info.score }</div>
+                </div>
             </div>
         )
     }
 };
+
+Panel = connect((state) => ({state: state}), actions)(Panel);
 
 
 class Game extends React.Component {
@@ -19,7 +29,7 @@ class Game extends React.Component {
         return (
             <div className="game">
                 <Board />
-                <Info />
+                <Panel />
             </div>
         )
     }

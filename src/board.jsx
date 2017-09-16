@@ -29,6 +29,7 @@ class Cat extends React.Component {
 
 Cat = connect((state) => ({}), actions)(Cat);
 
+
 class Board extends React.Component {
     render() {
         const { state } = this.props;

@@ -8,6 +8,7 @@
             body {
                 background-color: #FDF6E3;
                 color: #839496;
+                font-family: "Ubuntu mono", monospace;
                 margin: 0;
                 padding: 0;
             }
@@ -29,17 +30,36 @@
                 padding: 10px 40px;
                 display: inline-block;
             }
+            .right {
+                float: right;
+                padding-right: 0 !important;
+            }
+            .left {
+                float: left;
+                padding-left: 0 !important;
+            }
             .board {
                 box-shadow: 0 0 4px #839496;
                 background-color: #FFF;
+                float: left;
                 height: 600px;
-                margin: 40px auto;
+                margin-top: 40px;
                 padding: 5px;
                 width: 600px;
             }
             .info {
-                margin: 0 auto;
-                width: 600px;
+                color: #333;
+                float: right;
+                margin-top: 40px;
+                padding-left: 15px;
+                width: 135px;
+            }
+            .info .info-block {
+                border-bottom: 1px solid #E5E5E5;
+                padding: 8px 0;
+            }
+            .info .info-item {
+                margin-top: 8px;
             }
             .btn-cat {
                 background-color: transparent;
@@ -76,9 +96,9 @@
     <body>
         <div class="header">
             <div class="container">
-                <a href="/" class="logo">Match3Cat - собери одинаковых котиков</a>
+                <a href="/" class="logo left">Match3Cat - собери одинаковых котиков</a>
 
-                <a href="/" class="logo">История</a>
+                <a href="/" class="logo right">История</a>
             </div>
         </div>
         <div class="container">
