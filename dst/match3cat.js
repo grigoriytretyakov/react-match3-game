@@ -24955,7 +24955,7 @@ var Cat = function (_React$Component) {
                     },
                     _react2.default.createElement('img', {
                         className: 'cat cat-' + catKind,
-                        src: '/cat' + catKind + '.png'
+                        src: 'cat' + catKind + '.png'
                     })
                 );
             }
