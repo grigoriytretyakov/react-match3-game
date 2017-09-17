@@ -24863,7 +24863,7 @@ var Panel = function (_React$Component) {
                     { className: 'info-block' },
                     _react2.default.createElement(
                         'button',
-                        { type: 'button', onClick: function onClick() {
+                        { className: 'reload', type: 'button', onClick: function onClick() {
                                 return _this2.reloadGame();
                             } },
                         'Reload'

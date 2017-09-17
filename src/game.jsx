@@ -23,7 +23,7 @@ class Panel extends React.Component {
                     <div className="info-item">{ state.info.score }</div>
                 </div>
                 <div className="info-block">
-                    <button type="button" onClick={() => this.reloadGame()}>
+                    <button className="reload" type="button" onClick={() => this.reloadGame()}>
                         Reload
                     </button>
                 </div>
