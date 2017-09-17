@@ -13,17 +13,25 @@ class Cat extends React.Component {
     render() {
         const { catKind, selected } = this.props;
 
-        return (
-            <button
-                className={ selected ? 'btn-cat selected' : 'btn-cat'  } 
-                onClick={(e) => this.click()}
-            >
-                <img
-                    className={ `cat cat-${catKind}` }
-                    src={ `/cat${catKind}.png` }
-                />
-            </button>
-        )
+        if (catKind < 0) {
+            return (
+                <button className="btn-cat">
+                </button>
+            )
+        }
+        else {
+            return (
+                <button
+                    className={ selected ? 'btn-cat selected' : 'btn-cat'  } 
+                    onClick={(e) => this.click()}
+                >
+                    <img
+                        className={ `cat cat-${catKind}` }
+                        src={ `/cat${catKind}.png` }
+                    />
+                </button>
+            )
+        }
     }
 };
 
