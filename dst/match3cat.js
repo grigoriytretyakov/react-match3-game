@@ -11268,13 +11268,21 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 var ACTION_TYPES = exports.ACTION_TYPES = {
-    SELECT_CAT: 'SELECT_CAT'
+    SELECT_CAT: 'SELECT_CAT',
+
+    RELOAD_GAME: 'RELOAD_GAME'
 };
 
 var selectCat = exports.selectCat = function selectCat(catIndex) {
     return {
         type: ACTION_TYPES.SELECT_CAT,
         catIndex: catIndex
+    };
+};
+
+var reloadGame = exports.reloadGame = function reloadGame() {
+    return {
+        type: ACTION_TYPES.RELOAD_GAME
     };
 };
 
@@ -24818,8 +24826,18 @@ var Panel = function (_React$Component) {
     }
 
     _createClass(Panel, [{
+        key: 'reloadGame',
+        value: function reloadGame() {
+            var reloadGame = this.props.reloadGame;
+
+
+            reloadGame();
+        }
+    }, {
         key: 'render',
         value: function render() {
+            var _this2 = this;
+
             var state = this.props.state;
 
 
@@ -24838,6 +24856,17 @@ var Panel = function (_React$Component) {
                         'div',
                         { className: 'info-item' },
                         state.info.score
+                    )
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'info-block' },
+                    _react2.default.createElement(
+                        'button',
+                        { type: 'button', onClick: function onClick() {
+                                return _this2.reloadGame();
+                            } },
+                        'Reload'
                     )
                 )
             );
@@ -24955,7 +24984,7 @@ var Cat = function (_React$Component) {
                     },
                     _react2.default.createElement('img', {
                         className: 'cat cat-' + catKind,
-                        src: 'cat' + catKind + '.png'
+                        src: '/cat' + catKind + '.png'
                     })
                 );
             }
@@ -25031,17 +25060,24 @@ var _constants = __webpack_require__(229);
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
+var createCat = function createCat() {
+    return Math.floor(Math.random() * _constants.CATS_NUMBER);
+};
+
 var initFirstState = function initFirstState() {
     /*
      * There is no actual reason why I use the simple list instead of the
      * two-dimensional matrix for cats. I just thought it may be interesting.
-    */
+     */
 
     var cats = [];
 
     for (var i = 0; i < _constants.BOARD_SIZE * _constants.BOARD_SIZE; i++) {
-        cats.push(Math.floor(Math.random() * _constants.CATS_NUMBER));
+        cats.push(createCat());
     }
+
+    var folded = foldSimilarCats(cats);
+    cats = folded.cats;
 
     return {
         info: {
@@ -25102,41 +25138,49 @@ var findMatchedCols = function findMatchedCols(cats) {
     return matched;
 };
 
-var foldSimilarCats = function foldSimilarCats(cats) {
-    /* Three or more one color cats next to each other should be removed. */
+var fillCats = function fillCats(cats) {
+    cats = [].concat(_toConsumableArray(cats));
 
-    var toRemove = findMatchedLines(cats).concat(findMatchedCols(cats));
-
-    toRemove = toRemove.filter(function (i) {
-        return cats[i] > -1;
-    }); // Temporary code, just for debug
-
-    var _iteratorNormalCompletion = true;
-    var _didIteratorError = false;
-    var _iteratorError = undefined;
-
-    try {
-        for (var _iterator = toRemove[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            var i = _step.value;
-
-            cats[i] = -1;
-        }
-    } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-    } finally {
-        try {
-            if (!_iteratorNormalCompletion && _iterator.return) {
-                _iterator.return();
-            }
-        } finally {
-            if (_didIteratorError) {
-                throw _iteratorError;
+    for (var col = 0; col < _constants.BOARD_SIZE; col++) {
+        var empty = -1;
+        for (var y = _constants.BOARD_SIZE - 1; y > -1; y--) {
+            if (cats[y * _constants.BOARD_SIZE + col] == -1 && empty == -1) {
+                empty = y;
+            } else if (cats[y * _constants.BOARD_SIZE + col] != -1 && empty != -1) {
+                cats[empty * _constants.BOARD_SIZE + col] = cats[y * _constants.BOARD_SIZE + col];
+                cats[y * _constants.BOARD_SIZE + col] = -1;
+                empty--;
             }
         }
     }
 
-    return { score: toRemove.length, cats: cats };
+    cats = cats.map(function (cat) {
+        return cat == -1 ? createCat() : cat;
+    });
+
+    return cats;
+};
+
+var foldSimilarCats = function foldSimilarCats(cats) {
+    /* Three or more one color cats next to each other should be removed. */
+
+    var toRemove = [];
+    var score = 0;
+
+    cats = [].concat(_toConsumableArray(cats));
+
+    do {
+        toRemove = findMatchedLines(cats).concat(findMatchedCols(cats));
+
+        score += toRemove.length;
+
+        cats = cats.map(function (cat, i) {
+            return toRemove.indexOf(i) == -1 ? cat : -1;
+        });
+        cats = fillCats(cats);
+    } while (toRemove.length > 0);
+
+    return { score: score, cats: cats };
 };
 
 var selectCat = function selectCat(state, catIndex) {
@@ -25168,6 +25212,8 @@ var selectCat = function selectCat(state, catIndex) {
         var folded = foldSimilarCats(cats);
         if (folded.score == 0) {
             cats = state.cats;
+        } else {
+            cats = folded.cats;
         }
 
         return _extends({}, state, {
@@ -25187,6 +25233,9 @@ exports.default = function () {
     switch (action.type) {
         case _actions.ACTION_TYPES.SELECT_CAT:
             return selectCat(state, action.catIndex);
+
+        case _actions.ACTION_TYPES.RELOAD_GAME:
+            return initFirstState();
         default:
             return state;
     }

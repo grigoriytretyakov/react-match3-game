@@ -2,17 +2,24 @@ import { ACTION_TYPES } from './actions';
 import { BOARD_SIZE, CATS_NUMBER } from './constants';
 
 
+const createCat = () => {
+    return Math.floor(Math.random() * CATS_NUMBER);
+}
+
 const initFirstState = () => {
     /*
      * There is no actual reason why I use the simple list instead of the
      * two-dimensional matrix for cats. I just thought it may be interesting.
-    */
+     */
 
     let cats = [];
 
     for (let i = 0; i < BOARD_SIZE * BOARD_SIZE; i++) {
-        cats.push(Math.floor(Math.random() * CATS_NUMBER))
+        cats.push(createCat())
     }
+
+    let folded = foldSimilarCats(cats);
+    cats = folded.cats;
 
     return {
         info: {
@@ -75,17 +82,48 @@ const findMatchedCols = (cats) => {
     return matched;
 }
 
+
+const fillCats = (cats) => {
+    cats = [...cats];
+
+    for (let col = 0; col < BOARD_SIZE; col++) {
+        let empty = -1;
+        for (let y = BOARD_SIZE - 1; y > -1; y--) {
+            if (cats[y * BOARD_SIZE + col] == -1 && empty == -1) {
+                empty = y;
+            }
+            else if (cats[y * BOARD_SIZE + col] != -1 && empty != -1) {
+                cats[empty * BOARD_SIZE + col] = cats[y * BOARD_SIZE + col];
+                cats[y * BOARD_SIZE + col] = -1;
+                empty--;
+            }
+        }
+    }
+
+    cats = cats.map((cat) => (cat == -1 ? createCat() : cat));
+
+    return cats;
+}
+
+
 const foldSimilarCats = (cats) => {
     /* Three or more one color cats next to each other should be removed. */
 
-    let toRemove = findMatchedLines(cats).concat(findMatchedCols(cats));
+    let toRemove = [];
+    let score = 0;
 
-    toRemove = toRemove.filter((i) => (cats[i] > -1)); // Temporary code, just for debug
+    cats = [...cats];
 
-    for (let i of toRemove) {
-        cats[i] = -1;
-    }
-    return { score: toRemove.length, cats: cats };
+    do {
+        toRemove = findMatchedLines(cats).concat(findMatchedCols(cats));
+
+        score += toRemove.length;
+
+        cats = cats.map((cat, i) => (toRemove.indexOf(i) == -1 ? cat : -1));
+        cats = fillCats(cats);
+    } while (toRemove.length > 0);
+
+    return { score: score, cats: cats };
 }
 
 
@@ -121,6 +159,9 @@ const selectCat = (state, catIndex) => {
         if (folded.score == 0) {
             cats = state.cats;
         }
+        else {
+            cats = folded.cats;
+        }
 
         return {
             ...state,
@@ -132,7 +173,6 @@ const selectCat = (state, catIndex) => {
             selected: -1
         }
     }
-
 }
 
 
@@ -140,6 +180,9 @@ export default (state=initFirstState(), action) => {
     switch(action.type) {
         case ACTION_TYPES.SELECT_CAT:
             return selectCat(state, action.catIndex);
+
+        case ACTION_TYPES.RELOAD_GAME:
+            return initFirstState();
         default:
             return state;
     }

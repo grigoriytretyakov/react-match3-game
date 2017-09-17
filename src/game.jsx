@@ -7,6 +7,12 @@ import Board from './board.jsx';
 
 
 class Panel extends React.Component {
+    reloadGame() {
+        const { reloadGame } = this.props;
+
+        reloadGame();
+    }
+
     render() {
         const { state } = this.props;
 
@@ -15,6 +21,11 @@ class Panel extends React.Component {
                 <div className="info-block">
                     <div className="info-item">Score:</div>
                     <div className="info-item">{ state.info.score }</div>
+                </div>
+                <div className="info-block">
+                    <button type="button" onClick={() => this.reloadGame()}>
+                        Reload
+                    </button>
                 </div>
             </div>
         )

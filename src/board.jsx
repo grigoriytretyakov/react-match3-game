@@ -27,7 +27,7 @@ class Cat extends React.Component {
                 >
                     <img
                         className={ `cat cat-${catKind}` }
-                        src={ `cat${catKind}.png` }
+                        src={ `/cat${catKind}.png` }
                     />
                 </button>
             )
