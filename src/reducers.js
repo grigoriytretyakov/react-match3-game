@@ -24,21 +24,20 @@ const initFirstState = () => {
 }
 
 
-const foldSimilarCats = (cats) => {
-    /* Three or more one color cats next to each other should be removed. */
+const findMatchedLines = (cats) => {
+    let matched = [];
 
-    let toRemove = [];
-    for (let y = 0; y < BOARD_SIZE; y++) {
+    for (let line = 0; line < BOARD_SIZE; line++) {
         let start = 0;
         let end = 0;
         for (let x = 1; x < BOARD_SIZE; x++) {
-            if (cats[y * BOARD_SIZE + start] == cats[y * BOARD_SIZE + x]) {
+            if (cats[line * BOARD_SIZE + start] == cats[line * BOARD_SIZE + x]) {
                 end = x;
             }
-            if (x == (BOARD_SIZE - 1) || cats[y * BOARD_SIZE + start] != cats[y * BOARD_SIZE + x]) {
+            if (x == (BOARD_SIZE - 1) || cats[line * BOARD_SIZE + start] != cats[line * BOARD_SIZE + x]) {
                 if ((end - start) > 1) {
                     for (let i = start; i <= end; i++) {
-                        toRemove.push(y * BOARD_SIZE + i);
+                        matched.push(line * BOARD_SIZE + i);
                     }
                 }
                 start = x;
@@ -46,6 +45,40 @@ const foldSimilarCats = (cats) => {
             }
         }
     }
+
+    return matched;
+}
+
+
+const findMatchedCols = (cats) => {
+    let matched = [];
+
+    for (let col = 0; col < BOARD_SIZE; col++) {
+        let start = 0;
+        let end = 0;
+        for (let y = 1; y < BOARD_SIZE; y++) {
+            if (cats[start * BOARD_SIZE + col] == cats[y * BOARD_SIZE + col]) {
+                end = y;
+            }
+            if (y == (BOARD_SIZE - 1) || cats[start * BOARD_SIZE + col] != cats[y * BOARD_SIZE + col]) {
+                if ((end - start) > 1) {
+                    for (let i = start; i <= end; i++) {
+                        matched.push(i * BOARD_SIZE + col);
+                    }
+                }
+                start = y;
+                end = y;
+            }
+        }
+    }
+
+    return matched;
+}
+
+const foldSimilarCats = (cats) => {
+    /* Three or more one color cats next to each other should be removed. */
+
+    let toRemove = findMatchedLines(cats).concat(findMatchedCols(cats));
 
     toRemove = toRemove.filter((i) => (cats[i] > -1)); // Temporary code, just for debug
 
