@@ -1,7 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { Motion, spring } from 'react-motion';
 
 import * as actions from './actions';
+import { BOARD_SIZE } from './constants';
 
 
 class Cat extends React.Component {
@@ -11,25 +13,25 @@ class Cat extends React.Component {
     }
 
     render() {
-        const { catKind, selected } = this.props;
+        const { catKind, catIndex, selected } = this.props;
 
         if (catKind < 0) {
             return (
-                <button className="btn-cat">
-                </button>
+                <div className="catblock">
+                </div>
             )
         }
         else {
+            const left = catIndex % BOARD_SIZE * 60;
+            const top = Math.floor(catIndex / 10) * 60;
             return (
-                <button
-                    className={ selected ? 'btn-cat selected' : 'btn-cat'  } 
-                    onClick={(e) => this.click()}
-                >
+                <div className={ selected ? 'catblock selected' : 'catblock'  } 
+                    style={{top: `${top}px`, left: `${left}px`}}
+                    onClick={(e) => this.click()}>
                     <img
                         className={ `cat cat-${catKind}` }
-                        src={ `/cat${catKind}.png` }
-                    />
-                </button>
+                        src={ `/cat${catKind}.png` } />
+                </div>
             )
         }
     }

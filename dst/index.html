@@ -48,7 +48,8 @@
                 float: left;
                 height: 600px;
                 margin-top: 40px;
-                padding: 5px;
+                padding: 0;
+                position: relative;
                 width: 600px;
             }
             .info {
@@ -65,33 +66,21 @@
             .info .info-item {
                 margin-top: 8px;
             }
-            .btn-cat {
-                background-color: transparent;
-                border: 1px solid transparent;
-                cursor: pointer;
-                display: inline-block;
-                height: 60px;
-                margin: 0;
-                padding: 10px;
-                text-align: center;
-                vertical-align: middle;
+            .catblock {
+                display: block;
+                position: absolute;
                 width: 60px;
-                border-bottom: 1px dashed #ddd;
-                border-right: 1px dashed #ddd;
+                height: 60px;
+                cursor: pointer;
             }
-            .btn-cat::-moz-focus-inner {
-                border: 0;
-            }
-            .btn-cat:focus {
-                outline: none;
+            .catblock .cat {
+                height: 45px;
+                margin-left: 7.5px;
+                margin-top: 7.5px;
+                width: 45px;
             }
             .selected {
                 background-color: #ebb;
-                padding: 4px;
-            }
-            .cat {
-                max-height: 100%;
-                max-width: 100%;
             }
             .reload {
                 background-color: #5F005F;
