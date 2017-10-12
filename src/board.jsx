@@ -45,11 +45,11 @@ class Board extends React.Component {
         const { state } = this.props;
 
         let cats = state.cats.map(
-            (catKind, i) => (
+            (cat, i) => (
                 <Cat
-                    catKind={ catKind }
+                    catKind={ cat.kind }
                     catIndex={ i }
-                    key={`key-cat-${i}`}
+                    key={`key-cat-${cat.num}`}
                     selected={ i == state.selected }
                 />
             )

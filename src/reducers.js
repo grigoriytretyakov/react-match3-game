@@ -2,9 +2,27 @@ import { ACTION_TYPES } from './actions';
 import { BOARD_SIZE, CATS_NUMBER } from './constants';
 
 
-const createCat = () => {
-    return Math.floor(Math.random() * CATS_NUMBER);
-}
+const LIVE = 'live';
+
+const DEAD = 'dead';
+
+
+const createCat = (() => { 
+    let maxNum = 0;
+
+    return (() => {
+        maxNum++;
+
+        return {
+            num: maxNum,
+            kind: Math.floor(Math.random() * CATS_NUMBER),
+            x: 0,
+            y: 0,
+            state: LIVE,
+        };
+    })
+})();
+
 
 const initFirstState = () => {
     /*
@@ -38,10 +56,10 @@ const findMatchedLines = (cats) => {
         let start = 0;
         let end = 0;
         for (let x = 1; x < BOARD_SIZE; x++) {
-            if (cats[line * BOARD_SIZE + start] == cats[line * BOARD_SIZE + x]) {
+            if (cats[line * BOARD_SIZE + start].kind == cats[line * BOARD_SIZE + x].kind) {
                 end = x;
             }
-            if (x == (BOARD_SIZE - 1) || cats[line * BOARD_SIZE + start] != cats[line * BOARD_SIZE + x]) {
+            if (x == (BOARD_SIZE - 1) || cats[line * BOARD_SIZE + start].kind != cats[line * BOARD_SIZE + x].kind) {
                 if ((end - start) > 1) {
                     for (let i = start; i <= end; i++) {
                         matched.push(line * BOARD_SIZE + i);
@@ -64,10 +82,10 @@ const findMatchedCols = (cats) => {
         let start = 0;
         let end = 0;
         for (let y = 1; y < BOARD_SIZE; y++) {
-            if (cats[start * BOARD_SIZE + col] == cats[y * BOARD_SIZE + col]) {
+            if (cats[start * BOARD_SIZE + col].kind == cats[y * BOARD_SIZE + col].kind) {
                 end = y;
             }
-            if (y == (BOARD_SIZE - 1) || cats[start * BOARD_SIZE + col] != cats[y * BOARD_SIZE + col]) {
+            if (y == (BOARD_SIZE - 1) || cats[start * BOARD_SIZE + col].kind != cats[y * BOARD_SIZE + col].kind) {
                 if ((end - start) > 1) {
                     for (let i = start; i <= end; i++) {
                         matched.push(i * BOARD_SIZE + col);
