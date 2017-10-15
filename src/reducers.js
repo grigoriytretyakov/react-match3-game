@@ -212,7 +212,7 @@ const selectCat = (state, clickedCat) => {
             cats = folded.cats;
         }
 
-        let matched = folded.matched.concat(state.matched).slice(0, MATCHED_CATS_MAX_NUMBER);
+        let matched = state.matched.concat(folded.matched).slice(-MATCHED_CATS_MAX_NUMBER);
 
         return {
             ...state,

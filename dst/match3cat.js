@@ -25319,11 +25319,17 @@ var MatchedCat = function (_React$Component2) {
                 var left = cat.x * 60;
                 var top = cat.y * 60;
                 return _react2.default.createElement(
-                    'div',
-                    { className: 'catblock matched', style: { top: top + 'px', left: left + 'px' } },
-                    _react2.default.createElement('img', {
-                        className: 'cat cat-' + cat.kind,
-                        src: '/cat' + cat.kind + '.png' })
+                    _reactMotion.Motion,
+                    { defaultStyle: { x: left, y: top }, style: { x: (0, _reactMotion.spring)(_constants.BOARD_SIZE * 60 + 70), y: (0, _reactMotion.spring)(150) } },
+                    function (value) {
+                        return _react2.default.createElement(
+                            'div',
+                            { className: 'catblock matched', style: { top: value.y + 'px', left: value.x + 'px' } },
+                            _react2.default.createElement('img', {
+                                className: 'cat cat-' + cat.kind,
+                                src: '/cat' + cat.kind + '.png' })
+                        );
+                    }
                 );
             }
         }
@@ -26955,7 +26961,7 @@ var selectCat = function selectCat(state, clickedCat) {
             cats = folded.cats;
         }
 
-        var matched = folded.matched.concat(state.matched).slice(0, MATCHED_CATS_MAX_NUMBER);
+        var matched = state.matched.concat(folded.matched).slice(-MATCHED_CATS_MAX_NUMBER);
 
         return _extends({}, state, {
             info: _extends({}, state.info, {

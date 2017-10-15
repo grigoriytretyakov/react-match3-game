@@ -52,11 +52,17 @@ class MatchedCat extends React.Component {
             const left = cat.x * 60;
             const top = cat.y * 60;
             return (
-                <div className="catblock matched" style={{top: `${top}px`, left: `${left}px`}}>
-                    <img
-                        className={ `cat cat-${cat.kind}` }
-                        src={ `/cat${cat.kind}.png` } />
-                </div>
+                <Motion defaultStyle={{x: left, y: top}} style={{x: spring(BOARD_SIZE * 60 + 70), y: spring(150)}}>
+                    {value => 
+                        (
+                            <div className="catblock matched" style={{top: `${value.y}px`, left: `${value.x}px`}}>
+                                <img
+                                    className={ `cat cat-${cat.kind}` }
+                                    src={ `/cat${cat.kind}.png` } />
+                            </div>
+                        )
+                    }
+                </Motion>
             )
         }
     }
