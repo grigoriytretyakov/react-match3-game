@@ -5,9 +5,9 @@ export const ACTION_TYPES = {
 };
 
 
-export const selectCat = (catIndex) => ({
+export const selectCat = (cat) => ({
     type: ACTION_TYPES.SELECT_CAT,
-    catIndex: catIndex,
+    cat: cat,
 })
 
 

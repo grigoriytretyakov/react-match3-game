@@ -2,38 +2,36 @@ import { ACTION_TYPES } from './actions';
 import { BOARD_SIZE, CATS_NUMBER } from './constants';
 
 
-const LIVE = 'live';
-
-const DEAD = 'dead';
+const MATCHED_CATS_MAX_NUMBER = 15;
 
 
 const createCat = (() => { 
-    let maxNum = 0;
+    let nextCatNumber = 0;
 
-    return (() => {
-        maxNum++;
+    return ((x, y) => {
+        nextCatNumber++;
 
         return {
-            num: maxNum,
+            num: nextCatNumber,
             kind: Math.floor(Math.random() * CATS_NUMBER),
-            x: 0,
-            y: 0,
-            state: LIVE,
+            x: x,
+            y: y,
         };
     })
 })();
 
 
 const initFirstState = () => {
-    /*
-     * There is no actual reason why I use the simple list instead of the
-     * two-dimensional matrix for cats. I just thought it may be interesting.
-     */
-
     let cats = [];
 
-    for (let i = 0; i < BOARD_SIZE * BOARD_SIZE; i++) {
-        cats.push(createCat())
+    for (let y = 0; y < BOARD_SIZE; y++) {
+        let line = [];
+
+        for (let x = 0; x < BOARD_SIZE; x++) {
+            line.push(createCat(x, y))
+        }
+
+        cats.push(line);
     }
 
     let folded = foldSimilarCats(cats);
@@ -44,7 +42,8 @@ const initFirstState = () => {
             score: 0
         },
         cats: cats,
-        selected: -1,
+        matched: [],
+        selected: null,
     }
 }
 
@@ -56,13 +55,13 @@ const findMatchedLines = (cats) => {
         let start = 0;
         let end = 0;
         for (let x = 1; x < BOARD_SIZE; x++) {
-            if (cats[line * BOARD_SIZE + start].kind == cats[line * BOARD_SIZE + x].kind) {
+            if (cats[line][start].kind == cats[line][x].kind) {
                 end = x;
             }
-            if (x == (BOARD_SIZE - 1) || cats[line * BOARD_SIZE + start].kind != cats[line * BOARD_SIZE + x].kind) {
+            if (x == (BOARD_SIZE - 1) || cats[line][start].kind != cats[line][x].kind) {
                 if ((end - start) > 1) {
                     for (let i = start; i <= end; i++) {
-                        matched.push(line * BOARD_SIZE + i);
+                        matched.push(cats[line][i]);
                     }
                 }
                 start = x;
@@ -82,13 +81,13 @@ const findMatchedCols = (cats) => {
         let start = 0;
         let end = 0;
         for (let y = 1; y < BOARD_SIZE; y++) {
-            if (cats[start * BOARD_SIZE + col].kind == cats[y * BOARD_SIZE + col].kind) {
+            if (cats[start][col].kind == cats[y][col].kind) {
                 end = y;
             }
-            if (y == (BOARD_SIZE - 1) || cats[start * BOARD_SIZE + col].kind != cats[y * BOARD_SIZE + col].kind) {
+            if (y == (BOARD_SIZE - 1) || cats[start][col].kind != cats[y][col].kind) {
                 if ((end - start) > 1) {
                     for (let i = start; i <= end; i++) {
-                        matched.push(i * BOARD_SIZE + col);
+                        matched.push(cats[i][col]);
                     }
                 }
                 start = y;
@@ -102,23 +101,36 @@ const findMatchedCols = (cats) => {
 
 
 const fillCats = (cats) => {
-    cats = [...cats];
+    cats = cats.map(
+        (line, y) => (line.map(
+            (cat, x) => (cat === null ? null : {...cat}))
+        )
+    );
 
     for (let col = 0; col < BOARD_SIZE; col++) {
         let empty = -1;
         for (let y = BOARD_SIZE - 1; y > -1; y--) {
-            if (cats[y * BOARD_SIZE + col] == -1 && empty == -1) {
+            if (cats[y][col] === null && empty == -1) {
                 empty = y;
             }
-            else if (cats[y * BOARD_SIZE + col] != -1 && empty != -1) {
-                cats[empty * BOARD_SIZE + col] = cats[y * BOARD_SIZE + col];
-                cats[y * BOARD_SIZE + col] = -1;
+            else if (cats[y][col] !== null && empty != -1) {
+                cats[empty][col] = cats[y][col];
+                cats[empty][col].x = col;
+                cats[empty][col].y = empty;
+
+                cats[y][col] = null;
                 empty--;
             }
         }
     }
 
-    cats = cats.map((cat) => (cat == -1 ? createCat() : cat));
+    for (let y = 0; y < BOARD_SIZE; y++) {
+        for (let x = 0; x < BOARD_SIZE; x++) {
+            if (cats[y][x] === null) {
+                cats[y][x] = createCat(x, y);
+            }
+        }
+    }
 
     return cats;
 }
@@ -130,48 +142,67 @@ const foldSimilarCats = (cats) => {
     let toRemove = [];
     let score = 0;
 
-    cats = [...cats];
+    cats = cats.map((line) => (line.map((cat) => ({...cat}))));
+
+    let matched = [];
 
     do {
         toRemove = findMatchedLines(cats).concat(findMatchedCols(cats));
+        matched = matched.concat(toRemove);
 
         score += toRemove.length;
 
-        cats = cats.map((cat, i) => (toRemove.indexOf(i) == -1 ? cat : -1));
+        cats = cats.map(
+            (line) => (line.map(
+                (cat) => (toRemove.indexOf(cat) == -1 ? {...cat} : null))
+            )
+        );
         cats = fillCats(cats);
     } while (toRemove.length > 0);
 
-    return { score: score, cats: cats };
+    return { score: score, cats: cats, matched: matched };
 }
 
 
-const selectCat = (state, catIndex) => {
+const selectCat = (state, clickedCat) => {
     let neighbors = [];
-    let x = state.selected % BOARD_SIZE;
-    let y = Math.floor(state.selected / BOARD_SIZE);
-    if (x > 0) {
-        neighbors.push(state.selected - 1);
-    }
-    if (x < 9) {
-        neighbors.push(state.selected + 1);
-    }
-    if (y > 0) {
-        neighbors.push(state.selected - BOARD_SIZE);
-    }
-    if (y < 9) {
-        neighbors.push(state.selected + BOARD_SIZE);
+
+    if (state.selected !== null) {
+        const x = state.selected.x;
+        const y = state.selected.y;
+
+        if (x > 0) {
+            neighbors.push(state.cats[y][x - 1]);
+        }
+        if (x < 9) {
+            neighbors.push(state.cats[y][x + 1]);
+        }
+        if (y > 0) {
+            neighbors.push(state.cats[y - 1][x]);
+        }
+        if (y < 9) {
+            neighbors.push(state.cats[y + 1][x]);
+        }
     }
 
-    if (state.selected < 0 || state.selected == catIndex || neighbors.indexOf(catIndex) < 0) {
+    if (state.selected === null || state.selected === clickedCat || neighbors.indexOf(clickedCat) < 0) {
         return {
             ...state,
-            selected: (state.selected == catIndex ? -1 : catIndex)
+            selected: (state.selected === clickedCat ? null : clickedCat)
         }
     }
     else {
-        let cats = [...state.cats];
-        cats[state.selected] = state.cats[catIndex];
-        cats[catIndex] = state.cats[state.selected];
+        let cats = state.cats.map((line) => (line.map((cat, col) => ({...cat}))));
+        cats[clickedCat.y][clickedCat.x] = {
+            ...state.cats[state.selected.y][state.selected.x],
+            y: clickedCat.y,
+            x: clickedCat.x,
+        }
+        cats[state.selected.y][state.selected.x] = {
+            ...clickedCat,
+            y: state.selected.y,
+            x: state.selected.x,
+        }
 
         let folded = foldSimilarCats(cats);
         if (folded.score == 0) {
@@ -181,6 +212,8 @@ const selectCat = (state, catIndex) => {
             cats = folded.cats;
         }
 
+        let matched = folded.matched.concat(state.matched).slice(0, MATCHED_CATS_MAX_NUMBER);
+
         return {
             ...state,
             info: {
@@ -188,7 +221,8 @@ const selectCat = (state, catIndex) => {
                 score: state.info.score + folded.score,
             },
             cats: cats,
-            selected: -1
+            matched: matched,
+            selected: null
         }
     }
 }
@@ -197,10 +231,11 @@ const selectCat = (state, catIndex) => {
 export default (state=initFirstState(), action) => {
     switch(action.type) {
         case ACTION_TYPES.SELECT_CAT:
-            return selectCat(state, action.catIndex);
+            return selectCat(state, action.cat);
 
         case ACTION_TYPES.RELOAD_GAME:
             return initFirstState();
+
         default:
             return state;
     }

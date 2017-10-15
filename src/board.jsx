@@ -8,29 +8,28 @@ import { BOARD_SIZE } from './constants';
 
 class Cat extends React.Component {
     click() {
-        const { catIndex, selectCat } = this.props;
-        selectCat(catIndex);
+        const { cat, selectCat } = this.props;
+        selectCat(cat);
     }
 
     render() {
-        const { catKind, catIndex, selected } = this.props;
+        const { cat, selected } = this.props;
 
-        if (catKind < 0) {
+        if (cat === null) {
             return (
-                <div className="catblock">
-                </div>
+                <div className="catblock"> </div>
             )
         }
         else {
-            const left = catIndex % BOARD_SIZE * 60;
-            const top = Math.floor(catIndex / 10) * 60;
+            const left = cat.x * 60;
+            const top = cat.y * 60;
             return (
                 <div className={ selected ? 'catblock selected' : 'catblock'  } 
                     style={{top: `${top}px`, left: `${left}px`}}
                     onClick={(e) => this.click()}>
                     <img
-                        className={ `cat cat-${catKind}` }
-                        src={ `/cat${catKind}.png` } />
+                        className={ `cat cat-${cat.kind}` }
+                        src={ `/cat${cat.kind}.png` } />
                 </div>
             )
         }
@@ -40,23 +39,61 @@ class Cat extends React.Component {
 Cat = connect((state) => ({}), actions)(Cat);
 
 
+class MatchedCat extends React.Component {
+    render() {
+        const { cat } = this.props;
+
+        if (cat === null) {
+            return (
+                <div className="catblock"> </div>
+            )
+        }
+        else {
+            const left = cat.x * 60;
+            const top = cat.y * 60;
+            return (
+                <div className="catblock matched" style={{top: `${top}px`, left: `${left}px`}}>
+                    <img
+                        className={ `cat cat-${cat.kind}` }
+                        src={ `/cat${cat.kind}.png` } />
+                </div>
+            )
+        }
+    }
+};
 class Board extends React.Component {
     render() {
         const { state } = this.props;
 
-        let cats = state.cats.map(
-            (cat, i) => (
-                <Cat
-                    catKind={ cat.kind }
-                    catIndex={ i }
+        let cats = [];
+        for (let i = 0; i < BOARD_SIZE; i++) {
+            for (let j = 0; j < BOARD_SIZE; j++) {
+                const cat = state.cats[i][j];
+                cats.push(
+                    <Cat
+                        cat={ cat }
+                        key={`key-cat-${cat.num}`}
+                        selected={ cat !== null && cat === state.selected }
+                    />
+                );
+            }
+        }
+
+        let matched = state.matched.map(
+            (cat) => (
+                <MatchedCat
+                    cat={ cat }
                     key={`key-cat-${cat.num}`}
-                    selected={ i == state.selected }
+                    selected={ false }
                 />
             )
         );
 
         return (
-            <div className="board">{ cats }</div>
+            <div className="board">
+                { cats }
+                { matched }
+            </div>
         )
     }
 };

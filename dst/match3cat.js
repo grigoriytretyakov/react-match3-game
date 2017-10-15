@@ -6809,10 +6809,10 @@ var ACTION_TYPES = exports.ACTION_TYPES = {
     RELOAD_GAME: 'RELOAD_GAME'
 };
 
-var selectCat = exports.selectCat = function selectCat(catIndex) {
+var selectCat = exports.selectCat = function selectCat(cat) {
     return {
         type: ACTION_TYPES.SELECT_CAT,
-        catIndex: catIndex
+        cat: cat
     };
 };
 
@@ -25246,10 +25246,10 @@ var Cat = function (_React$Component) {
         key: 'click',
         value: function click() {
             var _props = this.props,
-                catIndex = _props.catIndex,
+                cat = _props.cat,
                 selectCat = _props.selectCat;
 
-            selectCat(catIndex);
+            selectCat(cat);
         }
     }, {
         key: 'render',
@@ -25257,16 +25257,19 @@ var Cat = function (_React$Component) {
             var _this2 = this;
 
             var _props2 = this.props,
-                catKind = _props2.catKind,
-                catIndex = _props2.catIndex,
+                cat = _props2.cat,
                 selected = _props2.selected;
 
 
-            if (catKind < 0) {
-                return _react2.default.createElement('div', { className: 'catblock' });
+            if (cat === null) {
+                return _react2.default.createElement(
+                    'div',
+                    { className: 'catblock' },
+                    ' '
+                );
             } else {
-                var left = catIndex % _constants.BOARD_SIZE * 60;
-                var top = Math.floor(catIndex / 10) * 60;
+                var left = cat.x * 60;
+                var top = cat.y * 60;
                 return _react2.default.createElement(
                     'div',
                     { className: selected ? 'catblock selected' : 'catblock',
@@ -25275,8 +25278,8 @@ var Cat = function (_React$Component) {
                             return _this2.click();
                         } },
                     _react2.default.createElement('img', {
-                        className: 'cat cat-' + catKind,
-                        src: '/cat' + catKind + '.png' })
+                        className: 'cat cat-' + cat.kind,
+                        src: '/cat' + cat.kind + '.png' })
                 );
             }
         }
@@ -25291,8 +25294,48 @@ Cat = (0, _reactRedux.connect)(function (state) {
     return {};
 }, actions)(Cat);
 
-var Board = function (_React$Component2) {
-    _inherits(Board, _React$Component2);
+var MatchedCat = function (_React$Component2) {
+    _inherits(MatchedCat, _React$Component2);
+
+    function MatchedCat() {
+        _classCallCheck(this, MatchedCat);
+
+        return _possibleConstructorReturn(this, (MatchedCat.__proto__ || Object.getPrototypeOf(MatchedCat)).apply(this, arguments));
+    }
+
+    _createClass(MatchedCat, [{
+        key: 'render',
+        value: function render() {
+            var cat = this.props.cat;
+
+
+            if (cat === null) {
+                return _react2.default.createElement(
+                    'div',
+                    { className: 'catblock' },
+                    ' '
+                );
+            } else {
+                var left = cat.x * 60;
+                var top = cat.y * 60;
+                return _react2.default.createElement(
+                    'div',
+                    { className: 'catblock matched', style: { top: top + 'px', left: left + 'px' } },
+                    _react2.default.createElement('img', {
+                        className: 'cat cat-' + cat.kind,
+                        src: '/cat' + cat.kind + '.png' })
+                );
+            }
+        }
+    }]);
+
+    return MatchedCat;
+}(_react2.default.Component);
+
+;
+
+var Board = function (_React$Component3) {
+    _inherits(Board, _React$Component3);
 
     function Board() {
         _classCallCheck(this, Board);
@@ -25306,19 +25349,31 @@ var Board = function (_React$Component2) {
             var state = this.props.state;
 
 
-            var cats = state.cats.map(function (cat, i) {
-                return _react2.default.createElement(Cat, {
-                    catKind: cat.kind,
-                    catIndex: i,
+            var cats = [];
+            for (var i = 0; i < _constants.BOARD_SIZE; i++) {
+                for (var j = 0; j < _constants.BOARD_SIZE; j++) {
+                    var cat = state.cats[i][j];
+                    cats.push(_react2.default.createElement(Cat, {
+                        cat: cat,
+                        key: 'key-cat-' + cat.num,
+                        selected: cat !== null && cat === state.selected
+                    }));
+                }
+            }
+
+            var matched = state.matched.map(function (cat) {
+                return _react2.default.createElement(MatchedCat, {
+                    cat: cat,
                     key: 'key-cat-' + cat.num,
-                    selected: i == state.selected
+                    selected: false
                 });
             });
 
             return _react2.default.createElement(
                 'div',
                 { className: 'board' },
-                cats
+                cats,
+                matched
             );
         }
     }]);
@@ -26695,38 +26750,34 @@ var _actions = __webpack_require__(57);
 
 var _constants = __webpack_require__(106);
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-var LIVE = 'live';
-
-var DEAD = 'dead';
+var MATCHED_CATS_MAX_NUMBER = 15;
 
 var createCat = function () {
-    var maxNum = 0;
+    var nextCatNumber = 0;
 
-    return function () {
-        maxNum++;
+    return function (x, y) {
+        nextCatNumber++;
 
         return {
-            num: maxNum,
+            num: nextCatNumber,
             kind: Math.floor(Math.random() * _constants.CATS_NUMBER),
-            x: 0,
-            y: 0,
-            state: LIVE
+            x: x,
+            y: y
         };
     };
 }();
 
 var initFirstState = function initFirstState() {
-    /*
-     * There is no actual reason why I use the simple list instead of the
-     * two-dimensional matrix for cats. I just thought it may be interesting.
-     */
-
     var cats = [];
 
-    for (var i = 0; i < _constants.BOARD_SIZE * _constants.BOARD_SIZE; i++) {
-        cats.push(createCat());
+    for (var y = 0; y < _constants.BOARD_SIZE; y++) {
+        var line = [];
+
+        for (var x = 0; x < _constants.BOARD_SIZE; x++) {
+            line.push(createCat(x, y));
+        }
+
+        cats.push(line);
     }
 
     var folded = foldSimilarCats(cats);
@@ -26737,7 +26788,8 @@ var initFirstState = function initFirstState() {
             score: 0
         },
         cats: cats,
-        selected: -1
+        matched: [],
+        selected: null
     };
 };
 
@@ -26748,13 +26800,13 @@ var findMatchedLines = function findMatchedLines(cats) {
         var start = 0;
         var end = 0;
         for (var x = 1; x < _constants.BOARD_SIZE; x++) {
-            if (cats[line * _constants.BOARD_SIZE + start].kind == cats[line * _constants.BOARD_SIZE + x].kind) {
+            if (cats[line][start].kind == cats[line][x].kind) {
                 end = x;
             }
-            if (x == _constants.BOARD_SIZE - 1 || cats[line * _constants.BOARD_SIZE + start].kind != cats[line * _constants.BOARD_SIZE + x].kind) {
+            if (x == _constants.BOARD_SIZE - 1 || cats[line][start].kind != cats[line][x].kind) {
                 if (end - start > 1) {
                     for (var i = start; i <= end; i++) {
-                        matched.push(line * _constants.BOARD_SIZE + i);
+                        matched.push(cats[line][i]);
                     }
                 }
                 start = x;
@@ -26773,13 +26825,13 @@ var findMatchedCols = function findMatchedCols(cats) {
         var start = 0;
         var end = 0;
         for (var y = 1; y < _constants.BOARD_SIZE; y++) {
-            if (cats[start * _constants.BOARD_SIZE + col].kind == cats[y * _constants.BOARD_SIZE + col].kind) {
+            if (cats[start][col].kind == cats[y][col].kind) {
                 end = y;
             }
-            if (y == _constants.BOARD_SIZE - 1 || cats[start * _constants.BOARD_SIZE + col].kind != cats[y * _constants.BOARD_SIZE + col].kind) {
+            if (y == _constants.BOARD_SIZE - 1 || cats[start][col].kind != cats[y][col].kind) {
                 if (end - start > 1) {
                     for (var i = start; i <= end; i++) {
-                        matched.push(i * _constants.BOARD_SIZE + col);
+                        matched.push(cats[i][col]);
                     }
                 }
                 start = y;
@@ -26792,24 +26844,35 @@ var findMatchedCols = function findMatchedCols(cats) {
 };
 
 var fillCats = function fillCats(cats) {
-    cats = [].concat(_toConsumableArray(cats));
+    cats = cats.map(function (line, y) {
+        return line.map(function (cat, x) {
+            return cat === null ? null : _extends({}, cat);
+        });
+    });
 
     for (var col = 0; col < _constants.BOARD_SIZE; col++) {
         var empty = -1;
         for (var y = _constants.BOARD_SIZE - 1; y > -1; y--) {
-            if (cats[y * _constants.BOARD_SIZE + col] == -1 && empty == -1) {
+            if (cats[y][col] === null && empty == -1) {
                 empty = y;
-            } else if (cats[y * _constants.BOARD_SIZE + col] != -1 && empty != -1) {
-                cats[empty * _constants.BOARD_SIZE + col] = cats[y * _constants.BOARD_SIZE + col];
-                cats[y * _constants.BOARD_SIZE + col] = -1;
+            } else if (cats[y][col] !== null && empty != -1) {
+                cats[empty][col] = cats[y][col];
+                cats[empty][col].x = col;
+                cats[empty][col].y = empty;
+
+                cats[y][col] = null;
                 empty--;
             }
         }
     }
 
-    cats = cats.map(function (cat) {
-        return cat == -1 ? createCat() : cat;
-    });
+    for (var _y = 0; _y < _constants.BOARD_SIZE; _y++) {
+        for (var x = 0; x < _constants.BOARD_SIZE; x++) {
+            if (cats[_y][x] === null) {
+                cats[_y][x] = createCat(x, _y);
+            }
+        }
+    }
 
     return cats;
 };
@@ -26820,47 +26883,70 @@ var foldSimilarCats = function foldSimilarCats(cats) {
     var toRemove = [];
     var score = 0;
 
-    cats = [].concat(_toConsumableArray(cats));
+    cats = cats.map(function (line) {
+        return line.map(function (cat) {
+            return _extends({}, cat);
+        });
+    });
+
+    var matched = [];
 
     do {
         toRemove = findMatchedLines(cats).concat(findMatchedCols(cats));
+        matched = matched.concat(toRemove);
 
         score += toRemove.length;
 
-        cats = cats.map(function (cat, i) {
-            return toRemove.indexOf(i) == -1 ? cat : -1;
+        cats = cats.map(function (line) {
+            return line.map(function (cat) {
+                return toRemove.indexOf(cat) == -1 ? _extends({}, cat) : null;
+            });
         });
         cats = fillCats(cats);
     } while (toRemove.length > 0);
 
-    return { score: score, cats: cats };
+    return { score: score, cats: cats, matched: matched };
 };
 
-var selectCat = function selectCat(state, catIndex) {
+var selectCat = function selectCat(state, clickedCat) {
     var neighbors = [];
-    var x = state.selected % _constants.BOARD_SIZE;
-    var y = Math.floor(state.selected / _constants.BOARD_SIZE);
-    if (x > 0) {
-        neighbors.push(state.selected - 1);
-    }
-    if (x < 9) {
-        neighbors.push(state.selected + 1);
-    }
-    if (y > 0) {
-        neighbors.push(state.selected - _constants.BOARD_SIZE);
-    }
-    if (y < 9) {
-        neighbors.push(state.selected + _constants.BOARD_SIZE);
+
+    if (state.selected !== null) {
+        var x = state.selected.x;
+        var y = state.selected.y;
+
+        if (x > 0) {
+            neighbors.push(state.cats[y][x - 1]);
+        }
+        if (x < 9) {
+            neighbors.push(state.cats[y][x + 1]);
+        }
+        if (y > 0) {
+            neighbors.push(state.cats[y - 1][x]);
+        }
+        if (y < 9) {
+            neighbors.push(state.cats[y + 1][x]);
+        }
     }
 
-    if (state.selected < 0 || state.selected == catIndex || neighbors.indexOf(catIndex) < 0) {
+    if (state.selected === null || state.selected === clickedCat || neighbors.indexOf(clickedCat) < 0) {
         return _extends({}, state, {
-            selected: state.selected == catIndex ? -1 : catIndex
+            selected: state.selected === clickedCat ? null : clickedCat
         });
     } else {
-        var cats = [].concat(_toConsumableArray(state.cats));
-        cats[state.selected] = state.cats[catIndex];
-        cats[catIndex] = state.cats[state.selected];
+        var cats = state.cats.map(function (line) {
+            return line.map(function (cat, col) {
+                return _extends({}, cat);
+            });
+        });
+        cats[clickedCat.y][clickedCat.x] = _extends({}, state.cats[state.selected.y][state.selected.x], {
+            y: clickedCat.y,
+            x: clickedCat.x
+        });
+        cats[state.selected.y][state.selected.x] = _extends({}, clickedCat, {
+            y: state.selected.y,
+            x: state.selected.x
+        });
 
         var folded = foldSimilarCats(cats);
         if (folded.score == 0) {
@@ -26869,12 +26955,15 @@ var selectCat = function selectCat(state, catIndex) {
             cats = folded.cats;
         }
 
+        var matched = folded.matched.concat(state.matched).slice(0, MATCHED_CATS_MAX_NUMBER);
+
         return _extends({}, state, {
             info: _extends({}, state.info, {
                 score: state.info.score + folded.score
             }),
             cats: cats,
-            selected: -1
+            matched: matched,
+            selected: null
         });
     }
 };
@@ -26885,10 +26974,11 @@ exports.default = function () {
 
     switch (action.type) {
         case _actions.ACTION_TYPES.SELECT_CAT:
-            return selectCat(state, action.catIndex);
+            return selectCat(state, action.cat);
 
         case _actions.ACTION_TYPES.RELOAD_GAME:
             return initFirstState();
+
         default:
             return state;
     }
