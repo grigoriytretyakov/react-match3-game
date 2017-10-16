@@ -9,10 +9,8 @@ const createCat = (() => {
     let nextCatNumber = 0;
 
     return ((x, y) => {
-        nextCatNumber++;
-
         return {
-            num: nextCatNumber,
+            num: nextCatNumber++,
             kind: Math.floor(Math.random() * CATS_NUMBER),
             x: x,
             y: y,

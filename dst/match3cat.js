@@ -26771,10 +26771,8 @@ var createCat = function () {
     var nextCatNumber = 0;
 
     return function (x, y) {
-        nextCatNumber++;
-
         return {
-            num: nextCatNumber,
+            num: nextCatNumber++,
             kind: Math.floor(Math.random() * _constants.CATS_NUMBER),
             x: x,
             y: y
