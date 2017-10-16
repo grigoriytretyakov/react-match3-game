@@ -52,7 +52,7 @@ class MatchedCat extends React.Component {
             const left = cat.x * 60;
             const top = cat.y * 60;
             return (
-                <Motion defaultStyle={{x: left, y: top}} style={{x: spring(BOARD_SIZE * 60 + 70), y: spring(150)}}>
+                <Motion defaultStyle={{x: left, y: top}} style={{x: spring(BOARD_SIZE * 60 + 70), y: spring(175)}}>
                     {value => 
                         (
                             <div className="catblock matched" style={{top: `${value.y}px`, left: `${value.x}px`}}>

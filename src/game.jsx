@@ -27,6 +27,12 @@ class Panel extends React.Component {
                         Reload
                     </button>
                 </div>
+
+                <div className="info-block">
+                    <div className="home">
+                        <img src="/home.png" />
+                    </div>
+                </div>
             </div>
         )
     }

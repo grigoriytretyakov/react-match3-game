@@ -25154,6 +25154,15 @@ var Panel = function (_React$Component) {
                             } },
                         'Reload'
                     )
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'info-block' },
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'home' },
+                        _react2.default.createElement('img', { src: '/home.png' })
+                    )
                 )
             );
         }
@@ -25320,7 +25329,7 @@ var MatchedCat = function (_React$Component2) {
                 var top = cat.y * 60;
                 return _react2.default.createElement(
                     _reactMotion.Motion,
-                    { defaultStyle: { x: left, y: top }, style: { x: (0, _reactMotion.spring)(_constants.BOARD_SIZE * 60 + 70), y: (0, _reactMotion.spring)(150) } },
+                    { defaultStyle: { x: left, y: top }, style: { x: (0, _reactMotion.spring)(_constants.BOARD_SIZE * 60 + 70), y: (0, _reactMotion.spring)(175) } },
                     function (value) {
                         return _react2.default.createElement(
                             'div',
