@@ -25161,7 +25161,7 @@ var Panel = function (_React$Component) {
                     _react2.default.createElement(
                         'div',
                         { className: 'home' },
-                        _react2.default.createElement('img', { src: '/home.png' })
+                        _react2.default.createElement('img', { src: 'home.png' })
                     )
                 )
             );
@@ -25288,7 +25288,7 @@ var Cat = function (_React$Component) {
                         } },
                     _react2.default.createElement('img', {
                         className: 'cat cat-' + cat.kind,
-                        src: '/cat' + cat.kind + '.png' })
+                        src: 'cat' + cat.kind + '.png' })
                 );
             }
         }
@@ -25336,7 +25336,7 @@ var MatchedCat = function (_React$Component2) {
                             { className: 'catblock matched', style: { top: value.y + 'px', left: value.x + 'px' } },
                             _react2.default.createElement('img', {
                                 className: 'cat cat-' + cat.kind,
-                                src: '/cat' + cat.kind + '.png' })
+                                src: 'cat' + cat.kind + '.png' })
                         );
                     }
                 );

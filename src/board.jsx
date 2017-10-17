@@ -29,7 +29,7 @@ class Cat extends React.Component {
                     onClick={(e) => this.click()}>
                     <img
                         className={ `cat cat-${cat.kind}` }
-                        src={ `/cat${cat.kind}.png` } />
+                        src={ `cat${cat.kind}.png` } />
                 </div>
             )
         }
@@ -58,7 +58,7 @@ class MatchedCat extends React.Component {
                             <div className="catblock matched" style={{top: `${value.y}px`, left: `${value.x}px`}}>
                                 <img
                                     className={ `cat cat-${cat.kind}` }
-                                    src={ `/cat${cat.kind}.png` } />
+                                    src={ `cat${cat.kind}.png` } />
                             </div>
                         )
                     }

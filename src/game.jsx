@@ -30,7 +30,7 @@ class Panel extends React.Component {
 
                 <div className="info-block">
                     <div className="home">
-                        <img src="/home.png" />
+                        <img src="home.png" />
                     </div>
                 </div>
             </div>
